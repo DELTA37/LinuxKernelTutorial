@@ -15,6 +15,7 @@ MODULE_VERSION("0.1");
 static int global_var = 1;
 static int min_val = 0;
 static int max_val = 5;
+static struct ctl_table_header* header;
 
 
 static struct ctl_table child_ctl_table[] = {
@@ -42,7 +43,7 @@ static struct ctl_table parent_ctl_table[] = {
 
 
 static int __init sysctl_module_init(void) {
-  if (!register_sysctl_table(parent_ctl_table)) {
+  if (!(header = register_sysctl_table(parent_ctl_table))) {
     printk(KERN_ALERT "Error: Failed to register parent_ctl_table\n");
     return -EFAULT;
   }
@@ -52,6 +53,7 @@ static int __init sysctl_module_init(void) {
 
 
 static void __exit sysctl_module_exit(void) {
+  unregister_sysctl_table(header);
   printk(KERN_INFO "End global_var = %d\n", global_var);
 }
 
